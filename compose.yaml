@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  andon_report: 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: andon_report:1.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - /home/maganaj/volumes/andon_report/csv_files:/usr/src/app/public/csv_files
+      - /home/maganaj/volumes/andon_report/config:/usr/src/app/config
+   #   - ./:/usr/src/app
+   #   - /usr/src/app/node_modules
+    environment:
+      NODE_ENV: DEV
+    user: root
