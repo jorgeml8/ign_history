@@ -31,6 +31,7 @@
 **/build
 **/dist
 **/backup
+**/config/config.js
 
 LICENSE
 README.md

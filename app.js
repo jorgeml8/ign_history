@@ -3,7 +3,8 @@ const { MongoClient } = require('mongodb');
 const { parse } = require('json2csv');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config/config');
+//const config = require('./config/config');
+const config = require('/usr/src/app/config/config.js');
 
 const app = express();
 const port = config.PORT;
