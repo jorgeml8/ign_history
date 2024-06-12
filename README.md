@@ -36,9 +36,9 @@ Andon Report is a Node.js application that facilitates the management and visual
    ``` 
    
 2. **Build and start the containers**:
-  ```bash
+   ```bash
    docker-compose up --build -d
-  ```
+   ```
 
 
 3. **Access the application**:
@@ -48,7 +48,7 @@ Andon Report is a Node.js application that facilitates the management and visual
 ### Deployment with Docker
 - Make sure you have the following configuration file for Nginx::
    ```bash
-         server {
+      server {
        listen 80;
 
        location /andon_report {
