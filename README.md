@@ -1,52 +1,53 @@
 # Andon Report
 
-## Descripción
+## Description
 
-Andon Report es una aplicación Node.js que facilita la gestión y visualización de incidentes de producción. La aplicación se ejecuta dentro de un contenedor Docker y utiliza Nginx como proxy inverso para redirigir el tráfico a la aplicación en la ruta `/andon_report`. La aplicación se conecta a una base de datos MongoDB para almacenar y recuperar datos de incidentes, y ofrece funcionalidades para buscar, visualizar y exportar los reportes en formato CSV.
+Andon Report is a Node.js application that facilitates the management and visualization of production incidents. The application runs inside a Docker container and uses Nginx as a reverse proxy to redirect traffic to the application on the `/andon_report` path. The application connects to a MongoDB database to store and retrieve incident data, and offers functionalities to search, visualize, and export reports in CSV format.
 
-## Características
+## Features
 
-- **Visualización de Incidentes**: Permite ver los incidentes de producción filtrados por fecha.
-- **Exportación de Datos**: Exporta los incidentes a un archivo CSV.
-- **Interfaz Amigable**: Utiliza EJS para las vistas y proporciona una interfaz intuitiva.
-- **Despliegue con Docker**: Facilita el despliegue utilizando Docker y Docker Compose.
-- **Integración con Nginx**: Usa Nginx como proxy inverso para gestionar las solicitudes.
+- **Incident Visualization**: Allows viewing production incidents filtered by date.
+- **Data Export**: Exports incidents to a CSV file.
+- **User-Friendly Interface**: Uses EJS for views and provides an intuitive interface.
+- **Deployment with Docker**: Facilitates deployment using Docker and Docker Compose.
+- **Integration with Nginx**: Uses Nginx as a reverse proxy to manage requests.
 
-## Tecnologías Utilizadas
+## Technologies Used
 
-- **Node.js**: Plataforma principal para la ejecución de la aplicación.
-- **Express.js**: Framework para la construcción de la API y manejo de rutas.
-- **MongoDB**: Base de datos NoSQL para almacenamiento de incidentes.
-- **EJS**: Motor de plantillas para renderizar vistas en el servidor.
-- **Docker**: Contenerización de la aplicación para un despliegue fácil y reproducible.
-- **Nginx**: Proxy inverso para redirigir el tráfico HTTP a la aplicación Node.js.
+- **Node.js**: Main platform for running the application.
+- **Express.js**: Framework for building the API and handling routes.
+- **MongoDB**: NoSQL database for storing incidents.
+- **EJS**: Template engine for rendering server-side views.
+- **Docker**: Containerization of the application for easy and reproducible deployment.
+- **Nginx**: Reverse proxy to redirect HTTP traffic to the Node.js application.
 
-## Prerrequisitos
+## Prerequisites
 
-- **Docker**: Asegúrate de tener Docker y Docker Compose instalados.
-- **Node.js**: Para desarrollo local, asegúrate de tener Node.js instalado.
+- **Docker**: Make sure you have Docker and Docker Compose installed.
+- **Node.js**: For local development, make sure you have Node.js installed.
 
-## Instalación y Despliegue
+## Installation and Deployment
 
-### Despliegue con Docker
-
-1. **Clona el repositorio**:
+1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/tu-usuario/andon_report.git
-   cd andon_report  ```
+   git clone https://github.com/your-username/andon_report.git
+   cd andon_report
+   ``` 
    
-2. **Construye y levanta los contenedores**:
+2. **Build and start the containers**:
   ```bash
-   docker-compose up --build -d  ```
+   docker-compose up --build -d
+  ```
 
-3. **Accede a la aplicación**:
 
--La aplicación estará disponible en http://localhost/andon_report.
+3. **Access the application**:
 
-### Despliegue con Docker
-- Asegúrate de tener el siguiente archivo de configuración para Nginx:
- ```bash
+- The application will be available at http://localhost:80/andon_report.
+
+### Deployment with Docker
+- Make sure you have the following configuration file for Nginx::
+   ```bash
          server {
        listen 80;
 
@@ -57,55 +58,51 @@ Andon Report es una aplicación Node.js que facilita la gestión y visualizació
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
           }
-      } ```
+      } 
+   ```      
 ### Variables de Entorno
 
-Asegúrate de configurar las siguientes variables de entorno en tu archivo de configuración o directamente en Docker Compose:
--NODE_ENV: Entorno de ejecución (DEV, UAT, PROD).
--MongoDBHost: URL de la base de datos MongoDB.
--MongoDBName: Nombre de la base de datos MongoDB.
+Make sure to configure the following environment variables in your configuration file or directly in Docker Compose
+- **NODE_ENV: Execution environment (DEV, UAT, PROD)**.
+- **MongoDBHost: URL of the MongoDB database.**.
+- **MongoDBName: Name of the MongoDB database**.
 
-### Variables de Entorno
-Asegúrate de configurar las siguientes variables de entorno en tu archivo de configuración o directamente en Docker Compose:
 
--NODE_ENV: Entorno de ejecución (DEV, UAT, PROD).
--MongoDBHost: URL de la base de datos MongoDB.
--MongoDBName: Nombre de la base de datos MongoDB.
+1. **Incident Visualization**:
 
-1. **Buscar Incidentes**:
+- **Access the main page.
+- **Select the start and end dates.
+- **Click on "Search".
 
--Accede a la página principal.
--Selecciona las fechas de inicio y fin.
--Haz clic en "Buscar".
+2. **Export Incidents to CSV**:
+- **After searching for incidents, click on "Export".
+- **A CSV file with the filtered data will be downloaded.
 
-2. **Exportar Incidentes a CSV**:
--Después de buscar los incidentes, haz clic en "Exportar".
--Se descargará un archivo CSV con los datos filtrados.
+### Contribución
 
-###Contribución
-
-1.Fork el repositorio.
-2. Crea una rama para tus cambios (git checkout -b feature/nueva-funcionalidad).
-3. Confirma tus cambios (git commit -m 'Añadir nueva funcionalidad').
-4. Empuja a la rama (git push origin feature/nueva-funcionalidad).
-5. Abre un Pull Request.
+1. Fork the repository.
+2. Create a branch for your changes ``git checkout -b feature/new-feature``.
+3. Commit your changes ``git commit -m Add new feature``
+4. Push to the branch ``git push origin feature/new-feature``.
+5. Open a Pull Request.
 ### Subir los archivos a GitHub
 
-1. **Añade los archivos modificados**:
+1. **Add the modified files**:
 
    ```bash
-   git add README.md DETAILS.md LICENSE ```
-
-2. **Haz un commit de los cambios**:
- ```bash
-      git commit -m "Update README and add DETAILS with project description and license link" ```
-
-3. **Empuja los cambios al repositorio remoto**:
- ```bash
-      git push origin main ```
-
+   git add README.md DETAILS.md LICENSE 
+   ```
+2. **Commit the changes**:
+   ```bash
+      git commit -m "Update README and add DETAILS with project description and license link" 
+   ```
+3. **Push the changes to the remote repository**:
+   ```bash
+      git push origin main 
+   ```
 Licencia
-Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE)
+ file for more details.
 
 Contacto
-Para cualquier consulta o sugerencia, puedes contactarme en jorge.malopez@gmail.com
+For any questions or suggestions, you can contact me at jorge.malopez@gmail.com
