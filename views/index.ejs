@@ -7,11 +7,11 @@
 <!-- <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">-->
-  <link rel="stylesheet" href="/css/w3.css">
-  <link href="css/PHSReportStyleSheet.css?v=V3.1.0" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" type="text/css" href="css/waiting_indicator.css?v=V3.1.0" />
+  <link rel="stylesheet" href="/andon_report/css/w3.css">
+  <link href="/andon_report/css/PHSReportStyleSheet.css?v=V3.1.0" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="/andon_report/css/waiting_indicator.css?v=V3.1.0" />
   <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/datatables.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="css/tab.css?v=V3.1.0" />
+  <link rel="stylesheet" type="text/css" href="/andon_report/css/tab.css?v=V3.1.0" />
   <style>
     /* Estilo personalizado para los inputs de fecha */
     input[type="date"] {
@@ -90,8 +90,8 @@
 <body>
   <div class="headerTab">
     <div class="header">
-      <img src="/images/daikin.png" alt="Image Missing" style="height:50px;">
-      <div class="center headText">Export Andon Alarms</div><span class="version_control w3-hide-medium w3-hide-small">V1.1.0</span>
+      <img src="/andon_report/images/daikin.png" alt="Image Missing" style="height:50px;">
+      <div class="center headText">Export Andon Alarms</div><span class="version_control w3-hide-medium w3-hide-small">V1.2.0</span>
     </div>
     <form id="searchForm" method="post">
       <div class="input-container">
@@ -211,7 +211,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-
   <script>
     $(document).ready(function() {
       let table;
@@ -314,7 +313,7 @@
       $('#clearSearch').click(function(event) {
         event.preventDefault();
         $('input[type="date"]').val('');
-        window.location.href = "/";
+        window.location.href = "/andon_report";
       });
 
       $('#searchForm').on('submit', function(event) {
@@ -326,7 +325,7 @@
           return;
         }
         let formData = $(this).serialize();
-        $.post('/search', formData, function(data) {
+        $.post('/andon_report/search', formData, function(data) {
           $('#tableContainer').html(data);
           initializeTable();
         });

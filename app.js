@@ -3,17 +3,16 @@ const { MongoClient } = require('mongodb');
 const { parse } = require('json2csv');
 const fs = require('fs');
 const path = require('path');
-//const config = require('./config/config');
-const config = require('/usr/src/app/config/config.js');
+const config = require('./config/config');
 
 const app = express();
 const port = config.PORT;
 
-const client = new MongoClient(config.MongoDBHost, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(config.MongoDBHost);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/andon_report', express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 // Crear el directorio 'csv_files' si no existe
@@ -22,11 +21,11 @@ if (!fs.existsSync(csvDir)) {
   fs.mkdirSync(csvDir);
 }
 
-app.get('/', (req, res) => {
+app.get('/andon_report', (req, res) => {
   res.render('index', { issues: null, startDate: '', endDate: '' });
 });
 
-app.post('/search', async (req, res) => {
+app.post('/andon_report/search', async (req, res) => {
   const { startDate, endDate } = req.body;
 
   if (!startDate || !endDate) {
@@ -62,12 +61,15 @@ app.post('/search', async (req, res) => {
       res.status(500).render('index', { issues: null, startDate, endDate, error: 'Internal Server Error' });
     }
   } finally {
-    await client.close();
+    try {
+      await client.close();
+    } catch (closeError) {
+      console.error('Error closing MongoDB connection', closeError);
+    }
   }
 });
 
-
-app.get('/export', async (req, res) => {
+app.get('/andon_report/export', async (req, res) => {
   const { startDate, endDate } = req.query;
 
   if (!startDate || !endDate) {
@@ -95,7 +97,11 @@ app.get('/export', async (req, res) => {
     console.error('Error connecting to MongoDB', error);
     res.status(500).render('index', { issues: null, startDate, endDate, error: 'Internal Server Error' });
   } finally {
-    await client.close();
+    try {
+      await client.close();
+    } catch (closeError) {
+      console.error('Error closing MongoDB connection', closeError);
+    }
   }
 });
 
