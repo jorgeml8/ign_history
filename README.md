@@ -34,11 +34,11 @@ Andon Report es una aplicación Node.js que facilita la gestión y visualizació
 
    ```bash
    git clone https://github.com/tu-usuario/andon_report.git
-   cd andon_report
+   cd andon_report  ```
    
 2. **Construye y levanta los contenedores**:
   ```bash
-   docker-compose up --build -d
+   docker-compose up --build -d  ```
 
 3. **Accede a la aplicación**:
 
@@ -57,7 +57,7 @@ Andon Report es una aplicación Node.js que facilita la gestión y visualizació
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
           }
-      }
+      } ```
 ### Variables de Entorno
 
 Asegúrate de configurar las siguientes variables de entorno en tu archivo de configuración o directamente en Docker Compose:
@@ -94,15 +94,15 @@ Asegúrate de configurar las siguientes variables de entorno en tu archivo de co
 1. **Añade los archivos modificados**:
 
    ```bash
-   git add README.md DETAILS.md LICENSE
+   git add README.md DETAILS.md LICENSE ```
 
 2. **Haz un commit de los cambios**:
  ```bash
-      git commit -m "Update README and add DETAILS with project description and license link"
+      git commit -m "Update README and add DETAILS with project description and license link" ```
 
 3. **Empuja los cambios al repositorio remoto**:
  ```bash
-      git push origin main
+      git push origin main ```
 
 Licencia
 Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
