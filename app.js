@@ -5,106 +5,107 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./config/config');
 
+const departmentData = require('./private/departments.json');
+
 const app = express();
 const port = config.PORT;
-
 const client = new MongoClient(config.MongoDBHost);
+
+async function main() {
+    try {
+        await client.connect();
+        console.log('Connected to MongoDB');
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    } catch (e) {
+        console.error('Unable to connect to MongoDB', e);
+        process.exit(1);
+    }
+}
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use('/andon_report', express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
-// Crear el directorio 'csv_files' si no existe
 const csvDir = path.join(__dirname, 'public/csv_files');
 if (!fs.existsSync(csvDir)) {
-  fs.mkdirSync(csvDir);
+    fs.mkdirSync(csvDir);
 }
 
 app.get('/andon_report', (req, res) => {
-  res.render('index', { issues: null, startDate: '', endDate: '' });
+    res.render('index', { issues: null, startDate: '', endDate: '', departments: departmentData });
 });
 
 app.post('/andon_report/search', async (req, res) => {
-  const { startDate, endDate } = req.body;
+    const { startDate, endDate, department } = req.body;
 
-  if (!startDate || !endDate) {
-    return res.render('index', { issues: null, startDate: '', endDate: '', error: 'Please provide startDate and endDate' });
-  }
+    let filter = {
+        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    };
 
-  try {
-    await client.connect();
-    const database = client.db(config.MongoDBName);
-    const collection = database.collection('andon_issues');
-
-    const filter = { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } };
-    const issues = await collection.find(filter).toArray();
-
-    // Calcular la diferencia de tiempo en minutos para cada registro
-    issues.forEach(issue => {
-      const startTime = new Date(issue.startTime);
-      const endTime = new Date(issue.endTime);
-      const timeDiff = Math.abs(endTime - startTime) / 60000; // Diferencia en minutos
-      issue.timeDiff = timeDiff;
-    });
-
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.render('partials/table', { issues });
-    } else {
-      res.render('index', { issues, startDate, endDate });
+    if (department && department !== 'all') {
+        filter.department = department;
     }
-  } catch (error) {
-    console.error('Error connecting to MongoDB', error);
-    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
-      res.status(500).render('partials/table', { issues: [] });
-    } else {
-      res.status(500).render('index', { issues: null, startDate, endDate, error: 'Internal Server Error' });
-    }
-  } finally {
+
     try {
-      await client.close();
-    } catch (closeError) {
-      console.error('Error closing MongoDB connection', closeError);
+        const database = client.db(config.MongoDBName);
+        const collection = database.collection('andon_issues');
+        const issues = await collection.find(filter).toArray();
+
+        issues.forEach(issue => {
+            const startTime = new Date(issue.startTime);
+            const endTime = new Date(issue.endTime);
+            issue.timeDiff = Math.abs(endTime - startTime) / 60000;
+        });
+
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            res.render('partials/table', { issues });
+        } else {
+            res.render('index', { issues, startDate, endDate, departments: departmentData });
+        }
+    } catch (error) {
+        console.error('Error querying MongoDB', error);
+        res.status(500).send('Error processing request');
     }
-  }
 });
 
 app.get('/andon_report/export', async (req, res) => {
-  const { startDate, endDate } = req.query;
+    const { startDate, endDate, department } = req.query;
 
-  if (!startDate || !endDate) {
-    return res.render('index', { issues: null, startDate: '', endDate: '', error: 'Please provide startDate and endDate' });
-  }
+    let filter = {
+        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    };
 
-  try {
-    await client.connect();
-    const database = client.db(config.MongoDBName);
-    const collection = database.collection('andon_issues');
-
-    const filter = { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } };
-    const issues = await collection.find(filter).toArray();
-
-    const csv = parse(issues, { fields: Object.keys(issues[0] || {}) });
-    const csvFilePath = path.join(csvDir, 'andon_issues.csv');
-    fs.writeFileSync(csvFilePath, csv);
-    res.download(csvFilePath, 'andon_issues.csv', (err) => {
-      if (err) {
-        console.error('Error downloading the file', err);
-      }
-      fs.unlinkSync(csvFilePath);
-    });
-  } catch (error) {
-    console.error('Error connecting to MongoDB', error);
-    res.status(500).render('index', { issues: null, startDate, endDate, error: 'Internal Server Error' });
-  } finally {
-    try {
-      await client.close();
-    } catch (closeError) {
-      console.error('Error closing MongoDB connection', closeError);
+    if (department && department !== 'all') {
+        filter.department = department;
     }
-  }
+
+    try {
+        const database = client.db(config.MongoDBName);
+        const collection = database.collection('andon_issues');
+        const issues = await collection.find(filter).toArray();
+
+        const csv = parse(issues, { fields: Object.keys(issues[0] || {}) });
+        const csvFilePath = path.join(csvDir, 'andon_issues.csv');
+        fs.writeFileSync(csvFilePath, csv);
+        res.download(csvFilePath, 'andon_issues.csv', (err) => {
+            if (err) {
+                console.error('Error downloading the file', err);
+            }
+            fs.unlinkSync(csvFilePath);
+        });
+    } catch (error) {
+        console.error('Error querying MongoDB', error);
+        res.status(500).send('Error processing request');
+    }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+process.on('SIGINT', async () => {
+    await client.close();
+    console.log('MongoDB connection closed');
+    process.exit(0);
 });
+
+main().catch(console.error);

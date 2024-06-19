@@ -1,0 +1,113 @@
+<tr>
+ <th>Start Date <input type="text" placeholder="Filter Start Date" /></th>
+ <th>Start Time <input type="text" placeholder="Filter Start Time" /></th>
+ <th>End Date <input type="text" placeholder="Filter End Date" /></th>
+<th>End Time <input type="text" placeholder="Filter End Time" /></th>
+  <th>Elapsed Time (mins) <input type="text" placeholder="Filter Elapsed Time" /></th>
+ <th>Department <input type="text" placeholder="Filter Department" /></th>
+  <th>Station ID <input type="text" placeholder="Filter Station ID" /></th>
+ <th>Sub Station <input type="text" placeholder="Filter Sub Station" /></th>
+ <th>Details <input type="text" placeholder="Filter Details" /></th>
+ <th>Alert Status <input type="text" placeholder="Filter Alert Status" /></th>
+   <th>Stopped <input type="text" placeholder="Filter Stopped" /></th>
+ <th>Alert Type <input type="text" placeholder="Filter Alert Type" /></th>
+ <th>Active <input type="text" placeholder="Filter Active" /></th>
+ <th>Source Type <input type="text" placeholder="Filter Source Type" /></th>
+  <th>Updated Date <input type="text" placeholder="Filter Updated Date" /></th>
+    <th>Updated Time <input type="text" placeholder="Filter Updated Time" /></th>
+   </tr>
+
+
+
+   <div id="tableContainer">
+      <% if (issues && issues.length > 0) { %>
+        <div class="container">
+          <div class="table-responsive">
+            <table id="issuesTable" class="table table-striped table-bordered" style="width:100%">
+              <thead>
+                <tr>
+                 <!-- <th>Created Date</th>
+                  <th>Created Time</th>
+                <th>Country</th>
+                  <th>Company</th>
+                  <th>Site</th>
+                  <th>Building</th>
+                  <th>Area</th>
+                  <th>Tool</th> -->
+                  <th>Start Date</th>
+                  <th>Start Time</th>
+                  <th>End Date</th>
+                  <th>End Time</th>
+                  <th>Elapsed time (mins)</th>
+                  <th>Department</th>
+                  <th>Station ID</th>
+                  <th>Sub Station</th>
+                  <th>Details</th> 
+                  <th>Alert Status</th>
+                  <th>Stopped</th>
+                  <th>Alert Type</th>
+                  <th>Active</th>
+                  <th>Source Type</th>
+                  <th>Updated Date</th>
+                  <th>Updated Time</th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr>
+               <!--   <th>Created Date</th>
+                  <th>Created Time</th>
+                <th>Country</th>
+                  <th>Company</th>
+                  <th>Site</th>
+                  <th>Building</th>
+                  <th>Area</th>
+                  <th>Tool</th> -->
+                  <th>Start Date</th>
+                  <th>Start Time</th>
+                  <th>End Date</th>
+                  <th>End Time</th>
+                  <th>Elapsed time (mins)</th>
+                  <th>Department</th>
+                  <th>Station ID</th>
+                  <th>Sub Station</th>
+                  <th>Details</th> 
+                  <th>Alert Status</th>
+                  <th>Stopped</th>
+                  <th>Alert Type</th>
+                  <th>Active</th>
+                  <th>Source Type</th>
+                  <th>Updated Date</th>
+                  <th>Updated Time</th>
+                </tr>
+              </tfoot>
+              <tbody>
+                <% issues.forEach(issue => { %>
+                  <tr>
+               <!--     <td><%= new Date(issue.createdAt).toLocaleDateString() %></td>
+                    <td><%= new Date(issue.createdAt).toLocaleTimeString() %></td>
+            <td><%= issue.country %></td>
+                    <td><%= issue.company %></td>
+                    <td><%= issue.site %></td>
+                    <td><%= issue.building %></td>
+                    <td><%= issue.area %></td>
+                    <td><%= issue.tool %></td>-->     
+                    <td><%= new Date(issue.startTime).toLocaleDateString() %></td>
+                    <td><%= new Date(issue.startTime).toLocaleTimeString() %></td>
+                    <td><%= new Date(issue.endTime).toLocaleDateString() %></td>
+                    <td><%= new Date(issue.endTime).toLocaleTimeString() %></td>
+                    <td style="color: <%= issue.timeDiff <= 2 ? 'yellow' : issue.timeDiff <= 5 ? 'orange' : 'red' %>">
+                      <%= issue.timeDiff.toFixed(2) %>      </td>  
+                    <td><%= issue.department %></td>
+                    <td><%= issue.stationID %></td>
+                    <td><%= issue.subStation %></td>
+                    <td><%= issue.details %></td>
+                    <td><%= issue.alertStatus %></td>
+                    <td><%= issue.stopped %></td>
+                    <td><%= issue.alertType %></td>
+                    <td><%= issue.active %></td>
+                    <td><%= issue.sourceType %></td>     
+                    <td><%= new Date(issue.updatedAt).toLocaleDateString() %></td>
+                    <td><%= new Date(issue.updatedAt).toLocaleTimeString() %></td>                 
+                  </tr>
+                <% }); %>
+              </tbody>
