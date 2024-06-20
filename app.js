@@ -4,10 +4,12 @@ const { parse } = require('json2csv');
 const fs = require('fs');
 const path = require('path');
 const config = require('./config/config');
+const version = require('./version.json').version;
 
 const departmentData = require('./private/departments.json');
 
 const app = express();
+app.locals.version = version; // Made it available.
 const port = config.PORT;
 const client = new MongoClient(config.MongoDBHost);
 
@@ -57,7 +59,13 @@ app.post('/andon_report/search', async (req, res) => {
         issues.forEach(issue => {
             const startTime = new Date(issue.startTime);
             const endTime = new Date(issue.endTime);
-            issue.timeDiff = Math.abs(endTime - startTime) / 60000;
+        
+            // Check if any of the dates are invalid.
+            if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+                issue.timeDiff = 0;
+            } else {
+                issue.timeDiff = Math.abs(endTime - startTime) / 60000;
+            }
         });
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {

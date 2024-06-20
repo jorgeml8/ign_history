@@ -24,14 +24,6 @@
       <tbody>
         <% issues.forEach(issue => { %>
           <tr>
-       <!--     <td><%= new Date(issue.createdAt).toLocaleDateString() %></td>
-            <td><%= new Date(issue.createdAt).toLocaleTimeString() %></td>
-    <td><%= issue.country %></td>
-            <td><%= issue.company %></td>
-            <td><%= issue.site %></td>
-            <td><%= issue.building %></td>
-            <td><%= issue.area %></td>
-            <td><%= issue.tool %></td>-->     
             <td><%= new Date(issue.startTime).toLocaleDateString() %></td>
             <td><%= new Date(issue.startTime).toLocaleTimeString() %></td>
             <td><%= new Date(issue.endTime).toLocaleDateString() %></td>
