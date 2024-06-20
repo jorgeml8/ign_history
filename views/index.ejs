@@ -157,19 +157,19 @@ element.style
             <table id="issuesTable" class="table table-striped table-bordered" style="width:100%">
               <thead>
                 <tr>
+                  <th>Active <input type="text" placeholder="Filter Active" /></th>
                   <th>Start Date <input type="text" placeholder="Filter Start Date" /></th>
                   <th>Start Time <input type="text" placeholder="Filter Start Time" /></th>
                   <th>End Date <input type="text" placeholder="Filter End Date" /></th>
                  <th>End Time <input type="text" placeholder="Filter End Time" /></th>
                    <th>Elapsed Time (mins) <input type="text" placeholder="Filter Elapsed Time" /></th>
+                   <th>Stopped <input type="text" placeholder="Filter Stopped" /></th>
                   <th>Department <input type="text" placeholder="Filter Department" /></th>
                    <th>Station ID <input type="text" placeholder="Filter Station ID" /></th>
                   <th>Sub Station <input type="text" placeholder="Filter Sub Station" /></th>
                   <th>Details <input type="text" placeholder="Filter Details" /></th>
                   <th>Alert Status <input type="text" placeholder="Filter Alert Status" /></th>
-                    <th>Stopped <input type="text" placeholder="Filter Stopped" /></th>
                   <th>Alert Type <input type="text" placeholder="Filter Alert Type" /></th>
-                  <th>Active <input type="text" placeholder="Filter Active" /></th>
                   <th>Source Type <input type="text" placeholder="Filter Source Type" /></th>
                    <th>Updated Date <input type="text" placeholder="Filter Updated Date" /></th>
                      <th>Updated Time <input type="text" placeholder="Filter Updated Time" /></th>
@@ -178,21 +178,19 @@ element.style
               <tbody>
                 <% issues.forEach(issue => { %>
                   <tr>
-  
+                    <td><%= issue.active %></td>
                     <td><%= new Date(issue.startTime).toLocaleDateString() %></td>
                     <td><%= new Date(issue.startTime).toLocaleTimeString() %></td>
                     <td><%= new Date(issue.endTime).toLocaleDateString() %></td>
                     <td><%= new Date(issue.endTime).toLocaleTimeString() %></td>
-                    <td style="color: <%= issue.timeDiff <= 2 ? 'yellow' : issue.timeDiff <= 5 ? 'orange' : 'red' %>">
-                      <%= issue.timeDiff.toFixed(2) %>      </td>  
+                    <td style="color: <%= issue.timeDiff <= 2 ? 'yellow' : issue.timeDiff <= 5 ? 'orange' : 'red' %>"><%= issue.timeDiff.toFixed(2) %></td>  
+                    <td><%= issue.stopped %></td>
                     <td><%= issue.department %></td>
                     <td><%= issue.stationID %></td>
                     <td><%= issue.subStation %></td>
                     <td><%= issue.details %></td>
                     <td><%= issue.alertStatus %></td>
-                    <td><%= issue.stopped %></td>
                     <td><%= issue.alertType %></td>
-                    <td><%= issue.active %></td>
                     <td><%= issue.sourceType %></td>     
                     <td><%= new Date(issue.updatedAt).toLocaleDateString() %></td>
                     <td><%= new Date(issue.updatedAt).toLocaleTimeString() %></td>                 
@@ -344,10 +342,11 @@ element.style
    // Iterate through each row of the DataTable
     table.rows({ search: 'applied' }).every(function() {
         let data = this.data();
-        let startDate = moment(data[0], "DD/MM/YYYY").toDate(); // Parse using moment
+        let startDate = moment(data[1], "MM/DD/YYYY").toDate(); // Parse using moment
+        //console.log(startDate);
         //let startDate = data[0]; // Assuming the start date is in column 0
-        let department = data[5]; // Department column
-        let elapsedTime = parseFloat(data[4]); // Elapsed time
+        let department = data[7]; // Department column
+        let elapsedTime = parseFloat(data[5]); // Elapsed time
 
         if (!departments[department]) {
             departments[department] = {};
