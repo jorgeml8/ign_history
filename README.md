@@ -104,5 +104,4 @@ Licencia
 This project is licensed under the MIT License. See the [LICENSE](LICENSE)
  file for more details.
 
-Contacto
-For any questions or suggestions, you can contact me at jorge.malopez@gmail.com
+
