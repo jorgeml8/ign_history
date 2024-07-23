@@ -2,7 +2,7 @@ const express = require('express');
 const { parse } = require('json2csv');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config/config');
+const config = require('./config/config.js');
 const version = require('./version.json').version;
 const sql = require('mssql');
 

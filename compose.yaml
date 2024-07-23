@@ -12,7 +12,12 @@ services:
     environment:
       NODE_ENV: DEV
     user: root
+    networks:
+      - report_network
 
+networks:
+  report_network:
+    external: true
  # nginx:
  #   build:
   #    context: .

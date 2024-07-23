@@ -1,8 +1,8 @@
-# Andon Report
+# Igntion History
 
 ## Description
 
-Andon Report is a Node.js application that facilitates the management and visualization of production incidents. The application runs inside a Docker container and uses Nginx as a reverse proxy to redirect traffic to the application on the `/andon_report` path. The application connects to a MongoDB database to store and retrieve incident data, and offers functionalities to search, visualize, and export reports in CSV format.
+Andon Report is a Node.js application that facilitates the management and visualization of production incidents. The application runs inside a Docker container and uses Nginx as a reverse proxy to redirect traffic to the application on the `/ign_history` path. The application connects to a MongoDB database to store and retrieve incident data, and offers functionalities to search, visualize, and export reports in CSV format.
 
 ## Features
 
@@ -31,8 +31,8 @@ Andon Report is a Node.js application that facilitates the management and visual
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/your-username/andon_report.git
-   cd andon_report
+   git clone https://github.com/your-username/ign_history.git
+   cd ign_history
    ``` 
    
 2. **Build and start the containers**:
@@ -43,7 +43,7 @@ Andon Report is a Node.js application that facilitates the management and visual
 
 3. **Access the application**:
 
-- The application will be available at http://localhost:80/andon_report.
+- The application will be available at http://localhost:82/ign_history.
 
 ### Deployment with Docker
 - Make sure you have the following configuration file for Nginx::
@@ -51,8 +51,8 @@ Andon Report is a Node.js application that facilitates the management and visual
       server {
        listen 80;
 
-       location /andon_report {
-        proxy_pass http://andon_report:3000;
+       location /ign_history {
+        proxy_pass http://ign_history:3000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
