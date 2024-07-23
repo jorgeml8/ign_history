@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
       {
-        name: 'andon_report',
+        name: 'ign_history',
         script: 'app.js', // Asegúrate de que este es el punto de entrada de tu aplicación
         instances: 1,
         autorestart: true,

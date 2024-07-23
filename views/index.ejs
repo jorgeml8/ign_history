@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Andon Issues Exporter</title>
+  <title>Ignition Tag History</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <link rel="stylesheet" href="/andon_report/css/w3.css">
-  <link href="/andon_report/css/PHSReportStyleSheet.css?v=V3.1.0" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" type="text/css" href="/andon_report/css/waiting_indicator.css?v=V3.1.1" />
+  <link rel="stylesheet" href="/ign_history/css/w3.css">
+  <link href="/ign_history/css/PHSReportStyleSheet.css?v=V3.1.0" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" type="text/css" href="/ign_history/css/waiting_indicator.css?v=V3.1.1" />
   <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/datatables.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/andon_report/css/tab.css?v=V3.1.0" />
-  <link rel="stylesheet" type="text/css" href=" https://code.highcharts.com/css/highcharts.css"/>
+  <link rel="stylesheet" type="text/css" href="/ign_history/css/tab.css?v=V3.1.0" />
+  <link rel="stylesheet" type="text/css" href="https://code.highcharts.com/css/highcharts.css"/>
   <style>
-
-   /* Custom style for date inputs */
+    /* Custom style for date inputs */
     input[type="date"] {
       padding: 10px;
       border: 1px solid #ccc;
@@ -26,13 +25,10 @@
       height: 44px;
     }
 
-
-
     div.input-row label {
       display: inline-block;
       margin-bottom: 5px;
       width: 30%;
-      /*text-align: right;*/
       padding-right: 5px;
     }
     button[type="submit"] {
@@ -83,123 +79,66 @@
       color: #111 !important;
     }
     input[type="text" i] {
-       
-        padding: 3px;
-        box-sizing: border-box;
+      padding: 3px;
+      box-sizing: border-box;
     }
     .dt-column-title {
-     
-        padding: 3px;
-        box-sizing: border-box;
+      padding: 3px;
+      box-sizing: border-box;
     }
     #issuesTable tr.selected {
-  background-color: #a2d2ff; /* Light blue background when selected */
-}
-
-.highcharts-dark {
-    /* --highcharts-neutral-color-100: rgb(255, 255, 255); */
-    --highcharts-neutral-color-80: rgb(214, 214, 214);
-}
-element.style
-{
-  fill:antiquewhite
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+      background-color: #a2d2ff; /* Light blue background when selected */
+    }
+    .highcharts-dark {
+      --highcharts-neutral-color-80: rgb(214, 214, 214);
+    }
+    element.style {
+      fill: antiquewhite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
   <div class="headerTab">
     <div class="header">
-      <img src="/andon_report/images/daikin.png" alt="Image Missing" style="height:50px;">
-      <div class="center headText">Export Andon Alarms</div><span class="version_control w3-hide-medium w3-hide-small"><%= version %></span>
+      <img src="/ign_history/images/daikin.png" alt="Image Missing" style="height:50px;">
+      <div class="center headText">Export Ignition History</div><span class="version_control w3-hide-medium w3-hide-small"><%= version %></span>
     </div>
-    <form id="searchForm" method="post" action="/andon_report/search">      <div class="input-container">
+    <form id="searchForm" method="post" action="/ign_history/search">
+      <div class="input-container">
         <div class="input-row">
           <label for="startDate">Start Date:</label>
           <input type="date" id="startDate" name="startDate" value="<%= startDate %>" required autocomplete="off">
           <label for="endDate">End Date:</label>
           <input type="date" id="endDate" name="endDate" value="<%= endDate %>" required autocomplete="off">
-         
-            <!-- Existing date fields -->
-            <label for="department" style="width:20%">Line:</label>
-            <select name="department" id="department" style="   width: calc(50% - 10px); margin-left: 5px; font-size: 14px; height: 44px;">
-                <option value="all" >All</option>
-                <% departments.forEach(function(dept) { %>
-                    <option value="<%= dept %>"><%= dept %></option>
-                <% }); %>
-            </select>
-            
-       
+          <label for="department" style="width:20%">Line:</label>
+          <select name="department" id="department" style="width: calc(50% - 10px); margin-left: 5px; font-size: 14px; height: 44px;">
+            <option value="all">All</option>
+            <% departments.forEach(function(dept) { %>
+              <option value="<%= dept %>"><%= dept %></option>
+            <% }); %>
+          </select>
+          <label for="table" style="width:20%">Table:</label>
+          <select name="table" id="table" style="width: calc(50% - 10px); margin-left: 5px; font-size: 14px; height: 44px;">
+            <option value="CurrentIGNValue">CurrentIGNValue</option>
+            <option value="CurrentIGNValue_History">CurrentIGNValue_History</option>
+          </select>
           <button type="submit">Search</button>
-          <button type="submit" id="toggleChart" class="w3-btn w3-blue" disabled >Show Chart</button>
+          <!--<button type="submit" id="toggleChart" class="w3-btn w3-blue" disabled>Show Chart</button>-->
           <button type="submit" id="clearSearch" class="w3-btn w3-yellow w3-round-large dx-button dx-button-default dx-button-mode-contained dx-widget dx-button-has-text">Reset</button>
         </div>
       </div>
     </form>
-
     <div id="demo-output" style="margin-bottom: 1em;" class="highcharts-dark"></div>
     <div id="loadingIndicator" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
-      <div style="border: 8x solid #f3f3f3; /* Light grey */
-                 border-top: 8px solid #3498db; /* Blue */
-                 border-radius: 50%;
-                 width: 60px;
-                 height: 60px;
-                 animation: spin 2s linear infinite;">
-      </div>
-  </div>
+      <div style="border: 8x solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 2s linear infinite;"></div>
+    </div>
     <div id="tableContainer">
       <% if (issues && issues.length > 0) { %>
-         <div class="container">
-          <div class="table-responsive">
-            <table id="issuesTable" class="table table-striped table-bordered" style="width:100%">
-              <thead>
-                <tr>
-                  <th>Active <input type="text" placeholder="Filter Active" /></th>
-                  <th>Start Date <input type="text" placeholder="Filter Start Date" /></th>
-                  <th>Start Time <input type="text" placeholder="Filter Start Time" /></th>
-                  <th>End Date <input type="text" placeholder="Filter End Date" /></th>
-                 <th>End Time <input type="text" placeholder="Filter End Time" /></th>
-                   <th>Elapsed Time (mins) <input type="text" placeholder="Filter Elapsed Time" /></th>
-                   <th>Stopped <input type="text" placeholder="Filter Stopped" /></th>
-                  <th>Department <input type="text" placeholder="Filter Department" /></th>
-                   <th>Station ID <input type="text" placeholder="Filter Station ID" /></th>
-                  <th>Sub Station <input type="text" placeholder="Filter Sub Station" /></th>
-                  <th>Details <input type="text" placeholder="Filter Details" /></th>
-                  <th>Alert Status <input type="text" placeholder="Filter Alert Status" /></th>
-                  <th>Alert Type <input type="text" placeholder="Filter Alert Type" /></th>
-                  <th>Source Type <input type="text" placeholder="Filter Source Type" /></th>
-                   <th>Updated Date <input type="text" placeholder="Filter Updated Date" /></th>
-                     <th>Updated Time <input type="text" placeholder="Filter Updated Time" /></th>
-                    </tr>
-              </thead>
-              <tbody>
-                <% issues.forEach(issue => { %>
-                  <tr>
-                    <td><%= issue.active %></td>
-                    <td><%= new Date(issue.startTime).toLocaleDateString() %></td>
-                    <td><%= new Date(issue.startTime).toLocaleTimeString() %></td>
-                    <td><%= new Date(issue.endTime).toLocaleDateString() %></td>
-                    <td><%= new Date(issue.endTime).toLocaleTimeString() %></td>
-                    <td style="color: <%= issue.timeDiff <= 2 ? 'yellow' : issue.timeDiff <= 5 ? 'orange' : 'red' %>"><%= issue.timeDiff.toFixed(2) %></td>  
-                    <td><%= issue.stopped %></td>
-                    <td><%= issue.department %></td>
-                    <td><%= issue.stationID %></td>
-                    <td><%= issue.subStation %></td>
-                    <td><%= issue.details %></td>
-                    <td><%= issue.alertStatus %></td>
-                    <td><%= issue.alertType %></td>
-                    <td><%= issue.sourceType %></td>     
-                    <td><%= new Date(issue.updatedAt).toLocaleDateString() %></td>
-                    <td><%= new Date(issue.updatedAt).toLocaleTimeString() %></td>                 
-                  </tr>
-                <% }); %>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <%- include('partials/table', { issues: issues }) %>
       <% } else { %>
         <p>No results.</p>
       <% } %>
@@ -210,44 +149,34 @@ element.style
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/dashboards/dashboards.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.0.8/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/datatables.min.js"></script>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-  
-
-   
-
-
   <script>
     $(document).ready(function() {
       let table;
       $('#toggleChart').prop('disabled', true).text('Show Chart');
-          // Ensure the chart is initially hidden and the button is configured correctly
-    $('#demo-output').hide(); // Ensure the chart's div is initially hidden
-    $('#toggleChart').text('Show Chart'); // Set the initial button text
-    $('#toggleChart').click(function() {
-      event.preventDefault();  // Prevent any default action of the button.
-      event.stopPropagation(); // Stop the event propagation to prevent unwanted interaction.
+      $('#demo-output').hide();
+      $('#toggleChart').click(function(event) {
+        event.preventDefault();
+        event.stopPropagation();
         var chartDiv = document.getElementById('demo-output');
         if (chartDiv.style.display === 'none') {
-            chartDiv.style.display = 'block';
-            $(this).text('Hide Chart'); // Change the button text when the chart is visible.
+          chartDiv.style.display = 'block';
+          $(this).text('Hide Chart');
         } else {
-            chartDiv.style.display = 'none';
-            $(this).text('Show Chart'); // Change the button text when the chart is hidden.
+          chartDiv.style.display = 'none';
+          $(this).text('Show Chart');
         }
-    });
+      });
       $('#clearSearch').click(function(event) {
         event.preventDefault();
         $('input[type="date"]').val('');
-        window.location.href = "/andon_report";
+        window.location.href = "/ign_history";
       });
-
       $('#searchForm').on('submit', function(event) {
         event.preventDefault();
         const startDate = new Date(document.getElementById('startDate').value);
@@ -256,255 +185,64 @@ element.style
           alert("The start date must not be later than the end date.");
           return;
         }
-        $('#loadingIndicator').show(); 
+        $('#loadingIndicator').show();
         let formData = $(this).serialize();
-
-  
-
-        $.post('/andon_report/search', formData, function(data) {
+        $.post('/ign_history/search', formData, function(data) {
           $('#tableContainer').html(data);
           initializeTable();
-          
-       //   table.clear().rows.add(data).draw(); // Assuming 'data' is the dataset.
-        $('#toggleChart').prop('disabled', false); // Enable the button if there is data.
-        $('#loadingIndicator').hide(); 
-     // Hide the indicator once the data is loaded.
-    
+          $('#toggleChart').prop('disabled', false);
+          $('#loadingIndicator').hide();
         }).fail(function() {
-        $('#loadingIndicator').hide();  // Ensure the indicator is hidden if there is an error.
-        alert('Error processing the search. Please try again.');
-    });
-  });
-
+          $('#loadingIndicator').hide();
+          alert('Error processing the search. Please try again.');
+        });
+      });
 
       function initializeTable() {
         if ($.fn.DataTable.isDataTable('#issuesTable')) {
           $('#issuesTable').DataTable().destroy();
-        }   
+        }
         table = new DataTable('#issuesTable', {
-          
           "scrollX": true,
           "responsive": false,
           "paging": true,
           "ordering": true,
           "info": true,
-          "select":true,
+          "select": true,
           "buttons": [
-          { extend: 'copyHtml5', footer: false },
-          { extend: 'excelHtml5', footer: false },
-          { extend: 'csvHtml5', footer: false },
-          {
+            { extend: 'copyHtml5', footer: false },
+            { extend: 'excelHtml5', footer: false },
+            { extend: 'csvHtml5', footer: false },
+            {
               extend: 'pdfHtml5',
               orientation: 'landscape',
               pageSize: 'LEGAL',
               footer: false,
- 
-
-            },
+            }
           ],
           layout: { top1Start: 'buttons' },
-
-
-      "initComplete": function(settings, json) {
-            // Add handlers for the inputs once DataTables is initialized
+          "initComplete": function(settings, json) {
             this.api().columns().every(function() {
-                var column = this;
-                var input = $(column.header()).find('input');
-
-            // Prevent the click on the input from triggering the column sorting.
-            input.on('click', function(e) {
-            e.stopPropagation(); // Stop the event propagation.
+              var column = this;
+              var input = $(column.header()).find('input');
+              input.on('click', function(e) {
+                e.stopPropagation();
+              });
+              $('input', this.header()).on('keyup change clear', function() {
+                if (column.search() !== this.value) {
+                  column.search(this.value).draw();
+                  initializeChart(table);
+                }
+              });
             });
-                
-                $('input', this.header()).on('keyup change clear', function() {
-                    if (column.search() !== this.value) {
-                        column.search(this.value).draw();
-                        initializeChart(table)
-                    }
-                });
-            });
-            
-            
-        }
-        
-        
-    });
-
- 
-    initializeChart(table)
-
-    // Create chart
-  }
-
-  function prepareChartData(table) {
-    let departments = {}; // Object to store data grouped by department and date
-
-   // Iterate through each row of the DataTable
-    table.rows({ search: 'applied' }).every(function() {
-        let data = this.data();
-        let startDate = moment(data[1], "MM/DD/YYYY").toDate(); // Parse using moment
-        //console.log(startDate);
-        //let startDate = data[0]; // Assuming the start date is in column 0
-        let department = data[7]; // Department column
-        let elapsedTime = parseFloat(data[5]); // Elapsed time
-
-        if (!departments[department]) {
-            departments[department] = {};
-        }
-        if (!departments[department][startDate]) {
-            departments[department][startDate] = [];
-        }
-        departments[department][startDate].push(elapsedTime);
-    });
-
-  // Convert the data into a format suitable for Highcharts
-    let chartSeries = [];
-    Object.keys(departments).forEach(dept => {
-        let data = [];
-        Object.keys(departments[dept]).forEach(date => {
-            // Assuming you want the average times for each date
-           // let avgElapsedTime = departments[dept][date].reduce((a, b) => a + b, 0) / departments[dept][date].length;
-           let sumElapsedTime = departments[dept][date].reduce((a, b) => a + b, 0);
-           data.push([new Date(date).getTime(), sumElapsedTime]); // Convert date to timestamp
+          }
         });
-        chartSeries.push({
-            name: dept,
-            data: data.sort((a, b) => a[0] - b[0]) // Sort by date
-        });
-    });
+      }
 
-    return chartSeries;
-}
-
-function initializeChart(table) {
-    let chartData = prepareChartData(table);
-
-    Highcharts.chart('demo-output', {
-        chart: {
-            type: 'area'
-                  },
-        title: {
-            text: 'Total Elapsed Time by Date ',
-            style: {
-            color: 'white'
-        }
-        },
-        xAxis: {
-          type: 'datetime',
-          title: {
-            text: 'Start Date'
-        },
-            labels: {
-            style: {
-                color: 'white'
-            }
-        }
-        },
-        yAxis: {
-            title: {
-                text: 'Elapsed Time (minutes)',
-                style: {
-                color: 'white'
-            }
-            },
-            labels: {
-            style: {
-                color: 'white'
-            }
-        }
-        },
-        legend: {
-       // layout: 'vertical',
-       // align: 'right',
-       // verticalAlign: 'middle',
-        itemStyle: {
-            color: '#FFFFFF', // Change the text color of the legends
-            fontWeight: 'bold'
-        }
-    },
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: 2010
-        }
-    },
-    tooltip: {
-        backgroundColor: '#333', 
-        style: {
-            color: 'white' // White text
-        }
-    },
-    series: prepareChartData(table),
-        exporting: {
-        enabled: true,
-        buttons: {
-            contextButton: {
-                align: 'left', // Align the button to the right
-                verticalAlign: 'bottom', // Align the button at the top of the chart
-                y: 0 // You can adjust the vertical position if needed
-            }
-        },
-        chartOptions: {
-            chart: {
-                backgroundColor: '#FFFFFF' // White background for the exported chart
-            },
-            title: {
-                style: {
-                    color: '#000000' // Black text for the title when exporting
-                }
-            },
-            xAxis: {
-                labels: {
-                    style: {
-                        color: '#000000' // Black text for the X-axis labels when exporting
-                    }
-                }
-            },
-            yAxis: {
-                labels: {
-                    style: {
-                        color: '#000000' // Black text for the Y-axis labels when exporting
-                    }
-                },
-                title: {
-                    style: {
-                        color: '#000000' // Black text for the Y-axis title when exporting
-                    }
-                }
-            },
-            legend: {
-                itemStyle: {
-                    color: '#000000' // Black text in the legend for the exported chart
-                }
-            }
-        }
-    },
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
-        
-    });
-}
       
- 
 
-    
 
     });
   </script>
-
 </body>
 </html>

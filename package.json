@@ -1,6 +1,6 @@
 {
-  "name": "andon_report",
-  "version": "V2.0.0",
+  "name": "ign_history",
+  "version": "V1.0.0",
   "description": "When you're ready, start your application by running: `docker compose up --build`.",
   "main": "index.js",
   "scripts": {

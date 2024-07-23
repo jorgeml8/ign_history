@@ -1,34 +1,33 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
 const { parse } = require('json2csv');
 const fs = require('fs');
 const path = require('path');
 const config = require('./config/config');
 const version = require('./version.json').version;
+const sql = require('mssql');
 
 const departmentData = require('./private/departments.json');
 
 const app = express();
 app.locals.version = version; // Made it available.
 const port = config.PORT;
-const client = new MongoClient(config.MongoDBHost);
 
 async function main() {
     try {
-        await client.connect();
-        console.log('Connected to MongoDB');
+        await sql.connect(config.sql);
+        console.log('Connected to SQL Server');
         app.listen(port, () => {
             console.log(`Server is running on port ${port}`);
         });
     } catch (e) {
-        console.error('Unable to connect to MongoDB', e);
+        console.error('Unable to connect to SQL Server', e);
         process.exit(1);
     }
 }
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use('/andon_report', express.static(path.join(__dirname, 'public')));
+app.use('/ign_history', express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
 const csvDir = path.join(__dirname, 'public/csv_files');
@@ -36,37 +35,34 @@ if (!fs.existsSync(csvDir)) {
     fs.mkdirSync(csvDir);
 }
 
-app.get('/andon_report', (req, res) => {
+app.get('/ign_history', (req, res) => {
     res.render('index', { issues: null, startDate: '', endDate: '', departments: departmentData });
 });
 
-app.post('/andon_report/search', async (req, res) => {
-    const { startDate, endDate, department } = req.body;
+app.post('/ign_history/search', async (req, res) => {
+    const { startDate, endDate, department, table } = req.body;
 
-    let filter = {
-        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    };
+    console.log('Received request with data:', { startDate, endDate, department, table });
+
+    const startDateTime = new Date(startDate);
+    const endDateTime = new Date(endDate);
+
+    const formattedStartDate = startDateTime.toISOString().split('T')[0] + ' 00:00:00.000';
+    const formattedEndDate = endDateTime.toISOString().split('T')[0] + ' 23:59:59.999';
+
+
+    let filter = `WHERE PostTimestamp BETWEEN '${formattedStartDate}' AND '${formattedEndDate}'`;
 
     if (department && department !== 'all') {
-        filter.department = department;
+        filter += ` AND TagPathName like '%${department}%'`;
     }
+        const query = `SELECT TagPathName, Value, TagValueQuality, PostTimestamp, TagOrigin, DataType, TagChangeTimestamp, SPCallTimestamp, SPStartTimestamp FROM PHSIGN.${table} ${filter}`;
+        console.log('Generated query:', query);
 
     try {
-        const database = client.db(config.MongoDBName);
-        const collection = database.collection('andon_issues');
-        const issues = await collection.find(filter).toArray();
-
-        issues.forEach(issue => {
-            const startTime = new Date(issue.startTime);
-            const endTime = new Date(issue.endTime);
-        
-            // Check if any of the dates are invalid.
-            if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
-                issue.timeDiff = 0;
-            } else {
-                issue.timeDiff = Math.abs(endTime - startTime) / 60000;
-            }
-        });
+        const result = await sql.query(`SELECT TagPathName, Value, TagValueQuality, PostTimestamp, TagOrigin, DataType, TagChangeTimestamp, SPCallTimestamp, SPStartTimestamp FROM PHSIGN.${table} ${filter}`);
+        const issues = result.recordset;
+        console.log('Query result:', issues);
 
         if (req.xhr || req.headers.accept.indexOf('json') > -1) {
             res.render('partials/table', { issues });
@@ -74,45 +70,24 @@ app.post('/andon_report/search', async (req, res) => {
             res.render('index', { issues, startDate, endDate, departments: departmentData });
         }
     } catch (error) {
-        console.error('Error querying MongoDB', error);
+        console.error('Error querying SQL Server', error);
         res.status(500).send('Error processing request');
     }
 });
 
-app.get('/andon_report/export', async (req, res) => {
-    const { startDate, endDate, department } = req.query;
-
-    let filter = {
-        createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    };
-
-    if (department && department !== 'all') {
-        filter.department = department;
-    }
-
+app.get('/sql_data', async (req, res) => {
     try {
-        const database = client.db(config.MongoDBName);
-        const collection = database.collection('andon_issues');
-        const issues = await collection.find(filter).toArray();
-
-        const csv = parse(issues, { fields: Object.keys(issues[0] || {}) });
-        const csvFilePath = path.join(csvDir, 'andon_issues.csv');
-        fs.writeFileSync(csvFilePath, csv);
-        res.download(csvFilePath, 'andon_issues.csv', (err) => {
-            if (err) {
-                console.error('Error downloading the file', err);
-            }
-            fs.unlinkSync(csvFilePath);
-        });
+        const result = await sql.query`SELECT TagPathName, Value, TagValueQuality, PostTimestamp, TagOrigin, DataType, TagChangeTimestamp, SPCallTimestamp, SPStartTimestamp FROM CurrentIGNValue`;
+        res.render('sql_data', { data: result.recordset });
     } catch (error) {
-        console.error('Error querying MongoDB', error);
+        console.error('Error querying SQL Server', error);
         res.status(500).send('Error processing request');
     }
 });
 
 process.on('SIGINT', async () => {
-    await client.close();
-    console.log('MongoDB connection closed');
+    await sql.close();
+    console.log('SQL Server connection closed');
     process.exit(0);
 });
 
