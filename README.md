@@ -16,7 +16,7 @@ Andon Report is a Node.js application that facilitates the management and visual
 
 - **Node.js**: Main platform for running the application.
 - **Express.js**: Framework for building the API and handling routes.
-- **MongoDB**: NoSQL database for storing incidents.
+- **SQLB**: SQL database for storing incidents.
 - **EJS**: Template engine for rendering server-side views.
 - **Docker**: Containerization of the application for easy and reproducible deployment.
 - **Nginx**: Reverse proxy to redirect HTTP traffic to the Node.js application.
